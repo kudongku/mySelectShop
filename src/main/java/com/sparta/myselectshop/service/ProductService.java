@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -39,5 +41,13 @@ public class ProductService {
         return productRepository.findById(id).orElseThrow(
                 ()-> new NullPointerException("해당 상품을 찾을 수 없습니다.")
         );
+    }
+
+    public List<ProductResponseDto> getProducts() {
+        List<Product> productList = productRepository.findAll();
+        return productList
+                .stream()
+                .map(product -> new ProductResponseDto(product))
+                .toList();
     }
 }
