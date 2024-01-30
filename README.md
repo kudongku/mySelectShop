@@ -185,3 +185,6 @@ public class Scheduler {
 5. 프론트엔드 수정
 6. jwtUtil 생성
 7. security 구현
+
+### 6. 정렬 기능 구현
+1. spring data 페이징 구현
