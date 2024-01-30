@@ -4,6 +4,7 @@ import com.sparta.myselectshop.dto.ProductMypriceRequestDto;
 import com.sparta.myselectshop.dto.ProductRequestDto;
 import com.sparta.myselectshop.dto.ProductResponseDto;
 import com.sparta.myselectshop.entity.Product;
+import com.sparta.myselectshop.entity.User;
 import com.sparta.myselectshop.naver.dto.ItemDto;
 import com.sparta.myselectshop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,8 @@ import java.util.List;
 public class ProductService {
     private final ProductRepository productRepository;
     private static final int MIN_MY_PRICE = 100;
-    public ProductResponseDto createProduct(ProductRequestDto productRequestDto) {
-        Product product = new Product(productRequestDto);
+    public ProductResponseDto createProduct(ProductRequestDto productRequestDto, User user) {
+        Product product = new Product(productRequestDto, user);
         productRepository.save(product);
         return new ProductResponseDto(product);
     }
@@ -38,11 +39,11 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
-    public List<ProductResponseDto> getProducts() {
-        List<Product> productList = productRepository.findAll();
+    public List<ProductResponseDto> getProducts(User user) {
+        List<Product> productList = productRepository.findAllByUser(user);
         return productList
                 .stream()
-                .map(product -> new ProductResponseDto(product))
+                .map(ProductResponseDto::new)
                 .toList();
     }
 
@@ -56,5 +57,13 @@ public class ProductService {
         return productRepository.findById(id).orElseThrow(
                 ()-> new NullPointerException("해당 상품을 찾을 수 없습니다.")
         );
+    }
+
+    public List<ProductResponseDto> getAllProducts() {
+        List<Product> productList = productRepository.findAll();
+        return productList
+                .stream()
+                .map(ProductResponseDto::new)
+                .toList();
     }
 }

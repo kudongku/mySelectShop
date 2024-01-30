@@ -176,3 +176,12 @@ public class Scheduler {
 
 }
 ```
+
+### 5. 회원 기능 구현
+1. user entity 생성
+2. userRoleEnum 생성
+3. user controller, service, repository
+4. dto 생성
+5. 프론트엔드 수정
+6. jwtUtil 생성
+7. security 구현
