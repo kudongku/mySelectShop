@@ -133,3 +133,77 @@ public abstract class Timestamped {
 }
 ```
 4. @PostMapping("/products") 구현
+5. @GetMapping("/products") 구현
+
+### 4. scheduler 구현
+```java
+@Slf4j(topic = "Scheduler")
+@Component
+@RequiredArgsConstructor
+public class Scheduler {
+
+    private final NaverApiService naverApiService;
+    private final ProductService productService;
+    private final ProductRepository productRepository;
+
+    // 초, 분, 시, 일, 월, 주 순서
+    @Scheduled(cron = "0 0 1 * * *") // 매일 새벽 1시
+    public void updatePrice() throws InterruptedException {
+        log.info("가격 업데이트 실행");
+        List<Product> productList = productRepository.findAll();
+
+        for (Product product : productList) {
+            // 1초에 한 상품 씩 조회합니다 (NAVER 제한)
+            TimeUnit.SECONDS.sleep(1);
+
+            // i 번째 관심 상품의 제목으로 검색을 실행합니다.
+            String title = product.getTitle();
+            List<ItemDto> itemDtoList = naverApiService.searchItems(title);
+
+            if (itemDtoList.size() > 0) {
+                ItemDto itemDto = itemDtoList.get(0);
+                // i 번째 관심 상품 정보를 업데이트합니다.
+                Long id = product.getId();
+                try {
+                    productService.updateBySearch(id, itemDto);
+                } catch (Exception e) {
+                    log.error(id + " : " + e.getMessage());
+                }
+            }
+        }
+
+    }
+
+}
+```
+
+### 5. 회원 기능 구현
+1. user entity 생성
+2. userRoleEnum 생성
+3. user controller, service, repository
+4. dto 생성
+5. 프론트엔드 수정
+6. jwtUtil 생성
+7. security 구현
+
+### 6. 정렬 기능 구현
+1. spring data 페이징 구현
+```
+    public Page<ProductResponseDto> getProducts(User user, int page, int size, String sortBy, Boolean isAsc) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        UserRoleEnum userRoleEnum = user.getRole();
+
+        Page<Product> productList;
+
+        if (userRoleEnum == UserRoleEnum.USER) {
+            productList = productRepository.findAllByUser(user, pageable);
+        } else {
+            productList = productRepository.findAll(pageable);
+        }
+
+        return productList.map(ProductResponseDto::new);
+    }
+```
