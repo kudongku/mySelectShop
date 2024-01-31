@@ -8,6 +8,7 @@ import com.sparta.myselectshop.naver.dto.ItemDto;
 import com.sparta.myselectshop.repository.FolderRepository;
 import com.sparta.myselectshop.repository.ProductFolderRepository;
 import com.sparta.myselectshop.repository.ProductRepository;
+import com.sparta.myselectshop.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -97,5 +99,17 @@ public class ProductService {
         }
 
         productFolderRepository.save(new ProductFolder(product, folder));
+    }
+
+    public Page<ProductResponseDto> getProductsInFolder(
+            Long folderId, int page, int size, String sortBy, Boolean isAsc, User user
+    ) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return productRepository
+                .findAllByUserAndProductFolderList_FolderId(user, folderId, pageable)
+                .map(ProductResponseDto::new);
     }
 }
