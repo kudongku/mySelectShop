@@ -295,7 +295,8 @@ function addFolder() {
         window.location.reload();
     })
         .fail(function(xhr, textStatus, errorThrown) {
-            alert("중복된 폴더입니다.");
+            alert(xhr.responseJSON.errorMessage);
+            console.log(xhr.status)
         });
 }
 
@@ -370,7 +371,8 @@ function addInputForProductToFolder(productId, button) {
                     window.location.reload();
                 })
                     .fail(function(xhr, textStatus, errorThrown) {
-                        alert("중복된 폴더입니다.");
+                        alert(xhr.responseJSON.errorMessage);
+                        console.log(xhr.status)
                     });
             });
         },
@@ -428,10 +430,16 @@ function logout() {
 }
 
 function getToken() {
+
     let auth = Cookies.get('Authorization');
 
     if(auth === undefined) {
         return '';
+    }
+
+    // kakao 로그인 사용한 경우 Bearer 추가
+    if(auth.indexOf('Bearer') === -1 && auth !== ''){
+        auth = 'Bearer ' + auth;
     }
 
     return auth;

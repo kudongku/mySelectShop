@@ -18,8 +18,8 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping("/products")
-    public ProductResponseDto createProduct(@RequestBody ProductRequestDto productRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return productService.createProduct(productRequestDto, userDetails.getUser());
+    public ProductResponseDto createProduct(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return productService.createProduct(requestDto, userDetails.getUser());
     }
 
     @PutMapping("/products/{id}")
