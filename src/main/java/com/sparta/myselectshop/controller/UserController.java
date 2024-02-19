@@ -22,7 +22,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 @Slf4j
@@ -49,7 +48,7 @@ public class UserController {
     public String signup(@Valid SignupRequestDto requestDto, BindingResult bindingResult) {
         // Validation 예외처리
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        if(!fieldErrors.isEmpty()) {
+        if (!fieldErrors.isEmpty()) {
             for (FieldError fieldError : bindingResult.getFieldErrors()) {
                 log.error(fieldError.getField() + " 필드 : " + fieldError.getDefaultMessage());
             }
@@ -73,14 +72,14 @@ public class UserController {
     }
 
     @GetMapping("/user-folder")
-    public String getUserInfo(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public String getUserInfo(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         model.addAttribute("folders", folderService.getFolders(userDetails.getUser()));
 
         return "index :: #fragment";
     }
 
     @GetMapping("/user/kakao/callback")
-    public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, UnsupportedEncodingException {
+    public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         String token = kakaoService.kakaoLogin(code);
 
         Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token.substring(7));

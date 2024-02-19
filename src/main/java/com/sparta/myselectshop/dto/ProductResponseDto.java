@@ -18,7 +18,7 @@ public class ProductResponseDto {
     private int lprice;
     private int myprice;
 
-    private List<FolderResponseDto> productFolderList = new ArrayList<>();
+    private final List<FolderResponseDto> productFolderList = new ArrayList<>();
 
     public ProductResponseDto(Product product) {
         this.id = product.getId();

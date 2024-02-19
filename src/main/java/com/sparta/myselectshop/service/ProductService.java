@@ -8,7 +8,6 @@ import com.sparta.myselectshop.naver.dto.ItemDto;
 import com.sparta.myselectshop.repository.FolderRepository;
 import com.sparta.myselectshop.repository.ProductFolderRepository;
 import com.sparta.myselectshop.repository.ProductRepository;
-import com.sparta.myselectshop.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -85,16 +83,16 @@ public class ProductService {
         Product product = findById(productId);
 
         Folder folder = folderRepository.findById(folderId).orElseThrow(
-                ()-> new NullPointerException("해당 폴더는 존재하지 않습니다.")
+                () -> new NullPointerException("해당 폴더는 존재하지 않습니다.")
         );
 
-        if(!Objects.equals(product.getUser().getId(), user.getId()) || !folder.getUser().getId().equals(user.getId())){
+        if (!Objects.equals(product.getUser().getId(), user.getId()) || !folder.getUser().getId().equals(user.getId())) {
             throw new IllegalArgumentException("회원님의 관심상품이 아니거나, 회원님의 폴더가 아닙니다.");
         }
 
         Optional<ProductFolder> overlapFolder = productFolderRepository.findByProductAndFolder(product, folder);
 
-        if(overlapFolder.isPresent()){
+        if (overlapFolder.isPresent()) {
             throw new IllegalArgumentException("중복된 폴더입니다.");
         }
 
